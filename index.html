@@ -20,21 +20,46 @@
 
 <body>
     <div class = "grid" id ="grid"></div>
+
+    <div class="footer">
+        点击格子 · 完成 +1
+    </div>
 </body>
 
+
 <script>
+    // 最简单的起步：先手动渲染6个格子，看看样式对不对
   const grid = document.getElementById('grid');
+    // 先清空
   grid.innerHTML = '';
+
+    // 生成36个格子，数据写死
   for (let i = 0; i < 36; i++) {
     const cell = document.createElement('div');
     cell.className = 'cell';
+      // 格子内部结构
     cell.innerHTML = `
       <span>${i+1}/36</span>
-      <span>0/10</span>
+      <span class="cell-progress">0/10</span>
     `;
     cell.onclick = function() {
-        alert('格子被点了！');
+        //alert('格子被点了！');
+
+        // 1. 找到这个格子右下角的数字
+        let progressSpan = this.querySelector('.cell-progress');
+
+        // 2. 取出当前数字（比如 "3/10"），只取 "/" 前面的部分
+        let current = progressSpan.innerText.split('/')[0];
+        current = parseInt(current);  // 变成数字，比如 3
+
+        // 3. 如果还没到 10，就 +1
+        if (current < 10) {
+            current = current + 1
         }
+
+        // 4. 把新数字写回去
+        progressSpan.innerText = current + '/10';
+    }
     grid.appendChild(cell);
   }
 </script>
