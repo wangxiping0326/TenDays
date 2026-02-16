@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+  .cell {
+    aspect-ratio: 1 / 1;
+    background: #eaeaea;
+    border-radius: 12px;
+    padding: 12px;
+  }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>拾日 · 三十六格之年</title>
+</head>
+
+<body>
+    <div class = "grid" id ="grid"></div>
+</body>
+
+<script>
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 36; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.innerHTML = `
+      <span>${i+1}/36</span>
+      <span>0/10</span>
+    `;
+    cell.onclick = function() {
+        alert('格子被点了！');
+        }
+    grid.appendChild(cell);
+  }
+</script>
+</html>
