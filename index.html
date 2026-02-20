@@ -28,6 +28,24 @@
 
 
 <script>
+  //定义颜色数组
+  //进度对应颜色（0/10-10/10）
+  const progressColors = [
+
+  '#eaeaea', // 0
+  '#e0e0e0', // 1
+  '#d6d6d6', // 2
+  '#cce3cc', // 3
+  '#c2e0c2', // 4
+  '#b8dbb8', // 5
+  '#aed6ae', // 6
+  '#a4d1a4', // 7
+  '#9acc9a', // 8
+  '#90c790', // 9
+  '#2e7d32'  // 10 - 深绿
+
+  ]
+
     // 最简单的起步：先手动渲染6个格子，看看样式对不对
   const grid = document.getElementById('grid');
     // 先清空
@@ -52,8 +70,9 @@
     cell.className = 'cell';
     //给每个格子增加一个序号，以方便点击时用来辨别点的是第几个格子
     cell.setAttribute('data_index', i);
-
-      // 格子内部结构
+    //根据当前进度设置背景色
+    cell.style.backgroundColor = progressColors[progressList[i]];
+    //格子内部结构
     cell.innerHTML = `
       <span>${i+1}/36</span>
       <span class="cell-progress">${progressList[i]}/10</span>
@@ -61,15 +80,18 @@
 
     cell.onclick = function() {
         //alert('格子被点了！');
-
         let index = parseInt(this.getAttribute('data_index'));
 
         if (progressList[index] < 10 ){
             progressList[index]++;
+            this.style.backgroundColor =[progressList[index]] ;
         }
 
-        //更新界面的显示
+        //更新界面的显示文字
         this.querySelector('.cell-progress').innerHTML = progressList[index] + '/10';
+        //更新界面格子背景色
+        this.style.backgroundColor =progressColors[progressList[index]];
+
 
 
         //存储
