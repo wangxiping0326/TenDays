@@ -33,19 +33,49 @@
     // 先清空
   grid.innerHTML = '';
 
+  //读取存储的进度
+
+  let progressList = []
+  const saved = localStorage.getItem('saved_shiri_progress');
+  if (saved) {
+      progressList = JSON.parse(saved);//数组，长度36
+
+  }
+  else{
+    //如果没有存储过，初始值为0
+      progressList = new Array(36).fill(0);
+  }
     // 生成36个格子，数据写死
+
   for (let i = 0; i < 36; i++) {
     const cell = document.createElement('div');
     cell.className = 'cell';
+    //给每个格子增加一个序号，以方便点击时用来辨别点的是第几个格子
+    cell.setAttribute('data_index', i);
+
       // 格子内部结构
     cell.innerHTML = `
       <span>${i+1}/36</span>
-      <span class="cell-progress">0/10</span>
+      <span class="cell-progress">${progressList[i]}/10</span>
     `;
+
     cell.onclick = function() {
         //alert('格子被点了！');
 
-        // 1. 找到这个格子右下角的数字
+        let index = parseInt(this.getAttribute('data_index'));
+
+        if (progressList[index] < 10 ){
+            progressList[index]++;
+        }
+
+        //更新界面的显示
+        this.querySelector('.cell-progress').innerHTML = progressList[index] + '/10';
+
+
+        //存储
+        localStorage.setItem('saved_shiri_progress', JSON.stringify(progressList));
+
+        /*// 1. 找到这个格子右下角的数字
         let progressSpan = this.querySelector('.cell-progress');
 
         // 2. 取出当前数字（比如 "3/10"），只取 "/" 前面的部分
@@ -59,6 +89,7 @@
 
         // 4. 把新数字写回去
         progressSpan.innerText = current + '/10';
+        */
     }
     grid.appendChild(cell);
   }
