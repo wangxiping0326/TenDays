@@ -53,66 +53,78 @@
 
   //读取存储的进度
 
-  let progressList = []
-  const saved = localStorage.getItem('saved_shiri_progress');
+  let cellsData = []
+
+  const saved = localStorage.getItem('shiri_cells');
+
   if (saved) {
-      progressList = JSON.parse(saved);//数组，长度36
+      cellsData = JSON.parse(saved);//数组，长度36
 
   }
   else{
     //如果没有存储过，初始值为0
-      progressList = new Array(36).fill(0);
+      cellsData = new Array(36).fill(0).map((_, index) =>({
+          progress: 0,
+          name: `第${index+1}格`//默认名字
+      }))
+
   }
     // 生成36个格子，数据写死
 
   for (let i = 0; i < 36; i++) {
     const cell = document.createElement('div');
+    const cellData = cellsData[i]
     cell.className = 'cell';
-    //给每个格子增加一个序号，以方便点击时用来辨别点的是第几个格子
-    cell.setAttribute('data_index', i);
+    cell.setAttribute('data-index',i);
     //根据当前进度设置背景色
-    cell.style.backgroundColor = progressColors[progressList[i]];
+    cell.style.backgroundColor = progressColors[cellData.progress];
     //格子内部结构
     cell.innerHTML = `
+     <div style="display: flex;justify-content: space-between;font-size: 0.75rem;">
       <span>${i+1}/36</span>
-      <span class="cell-progress">${progressList[i]}/10</span>
+      <span class="cell-progress">${cellData.progress}/10</span>
+     </div>
+     <div style = "margin-top: 8px;font-size: 0.9rem;font-weight: 500;text-align: center;"class = "cell-name">
+     ${cellData.name}
+     </div>
     `;
+    //======单击事件：进度+1，颜色变化
 
     cell.onclick = function() {
         //alert('格子被点了！');
-        let index = parseInt(this.getAttribute('data_index'));
+        let index = parseInt(this.getAttribute('data-index'));
 
-        if (progressList[index] < 10 ){
-            progressList[index]++;
-            this.style.backgroundColor =[progressList[index]] ;
+        if (cellsData[index].progress < 10 ){
+            cellsData[index].progress ++;
+            // 更新进度文字
+            this.querySelector('.cell-progress').innerHTML = cellsData[index].progress + '/10';
+
+            //更新界面格子背景色
+            this.style.backgroundColor =progressColors[cellsData[index].progress];
+
+             //存储
+            localStorage.setItem('shiri_cells', JSON.stringify(cellsData));
         }
+    };
 
-        //更新界面的显示文字
-        this.querySelector('.cell-progress').innerHTML = progressList[index] + '/10';
-        //更新界面格子背景色
-        this.style.backgroundColor =progressColors[progressList[index]];
+    //====双击事件：修改名字====
+      cell.ondblclick = function(e) {
+          //阻止事件冒泡
+          e.stopPropagation();
 
+          let index = parseInt(this.getAttribute('data-index'));
+          let newName = prompt('给这十天起个名字叭~',cellsData[index].name);
 
+          if (newName && newName.trim() !== '') {
+                    // 更新数据
+                    cellsData[index].name = newName.trim();
+                    // 更新显示
+                    this.querySelector('.cell-name').innerText = newName.trim();
+                    // 保存
+                    localStorage.setItem('shiri_cells', JSON.stringify(cellsData));
+                }
+      };
 
-        //存储
-        localStorage.setItem('saved_shiri_progress', JSON.stringify(progressList));
-
-        /*// 1. 找到这个格子右下角的数字
-        let progressSpan = this.querySelector('.cell-progress');
-
-        // 2. 取出当前数字（比如 "3/10"），只取 "/" 前面的部分
-        let current = progressSpan.innerText.split('/')[0];
-        current = parseInt(current);  // 变成数字，比如 3
-
-        // 3. 如果还没到 10，就 +1
-        if (current < 10) {
-            current = current + 1
-        }
-
-        // 4. 把新数字写回去
-        progressSpan.innerText = current + '/10';
-        */
-    }
     grid.appendChild(cell);
   }
 </script>
